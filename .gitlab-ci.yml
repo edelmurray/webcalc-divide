@@ -1,5 +1,5 @@
 image: golang:1.16
 
- stage: test
+test:app:
   script:
     - go main/main_test.go
