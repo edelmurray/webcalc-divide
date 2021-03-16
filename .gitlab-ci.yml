@@ -6,7 +6,7 @@ variables:
   PROJECT: webcalc-divide
   
 stages:
--test
+ - test
 
 before_script:
   - mkdir -p $GOPATH/src/$REPO/$GROUP $GOPATH/src/_/builds
