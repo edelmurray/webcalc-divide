@@ -1,0 +1,13 @@
+image: golang:1.16
+
+variables:
+  # Please edit to your GitLab project
+  REPO_NAME: gitlab.hal.davecutting.uk/40146762/webcalc-divide
+
+stages:
+  - test
+
+
+ stage: test
+  script:
+    - go main/main_test.go
