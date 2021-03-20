@@ -15,12 +15,21 @@ func main() {
 
 func Handler(w http.ResponseWriter, r *http.Request) {
 	//https://golangcode.com/get-a-url-parameter-from-a-request/
+	output := map[string]interface{}{"x-value": 0, "y-value": 0, "answer": 0, "error": false}
 	x, ok := r.URL.Query()["x"]
+
+	if !ok || len(x[0]) < 1 {
+		log.Println("Error: values not appropriate")
+		output["error"] = true
+		http.Error(w, "inappropriate values", http.StatusBadRequest)
+		return
+	}
 	y, ok := r.URL.Query()["y"]
 
-	if !ok || len(x[0]) < 1 || len(y[0]) < 1 {
+	if !ok || len(y[0]) < 1 {
 		log.Println("Error: values not appropriate")
-		http.Error(w, "values not appropriate", http.StatusBadRequest)
+		output["error"] = true
+		http.Error(w, "inappropriate values", http.StatusBadRequest)
 		return
 	}
 
@@ -30,6 +39,7 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Println("Error: values not appropriate")
 		fmt.Print("x error")
+		output["error"] = true
 		http.Error(w, "cannot divide :"+x[0], http.StatusBadRequest)
 		return
 	}
@@ -37,10 +47,11 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 	if err != nil || (yInt <= 0) {
 		log.Println("Error: values not appropriate")
 		fmt.Print("y error")
+		output["error"] = true
 		http.Error(w, "cannot divide :"+y[0], http.StatusBadRequest)
 		return
 	}
-	output := map[string]interface{}{"x-value": 0, "y-value": 0, "answer": 0}
+
 	answer := CalculateDivide(xInt, yInt)
 	output["answer"] = answer
 	output["x-value"] = xInt
