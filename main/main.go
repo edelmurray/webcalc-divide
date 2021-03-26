@@ -22,7 +22,7 @@ func main() {
 
 func Handler(w http.ResponseWriter, r *http.Request) {
 	//https://golangcode.com/get-a-url-parameter-from-a-request/
-	output := map[string]interface{}{"calculation: ": "/", "answer: ": 0}
+	output := map[string]interface{}{"calculation: ": "/"}
 	x, ok := r.URL.Query()["x"]
 
 	if !ok || len(x[0]) < 1 {
