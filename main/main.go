@@ -5,23 +5,30 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 	"strconv"
 )
 
 func main() {
 	http.HandleFunc("/", Handler)
-	log.Fatal(http.ListenAndServe(":8080", nil))
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8080"
+	}
+	if err := http.ListenAndServe(":"+port, nil); err != nil {
+		log.Fatal(err)
+	}
 }
 
 func Handler(w http.ResponseWriter, r *http.Request) {
 	//https://golangcode.com/get-a-url-parameter-from-a-request/
-	output := map[string]interface{}{"x-value": 0, "y-value": 0, "answer": 0, "error": false}
+	output := map[string]interface{}{"calculation: ": "/", "answer: ": 0}
 	x, ok := r.URL.Query()["x"]
 
 	if !ok || len(x[0]) < 1 {
 		log.Println("Error: values not appropriate")
 		output["error"] = true
-		http.Error(w, "inappropriate values", http.StatusBadRequest)
+		http.Error(w, "No x parameter provided", http.StatusBadRequest)
 		return
 	}
 	y, ok := r.URL.Query()["y"]
@@ -29,7 +36,7 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 	if !ok || len(y[0]) < 1 {
 		log.Println("Error: values not appropriate")
 		output["error"] = true
-		http.Error(w, "inappropriate values", http.StatusBadRequest)
+		http.Error(w, "No y parameter provided", http.StatusBadRequest)
 		return
 	}
 
@@ -40,7 +47,7 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 		log.Println("Error: values not appropriate")
 		fmt.Print("x error")
 		output["error"] = true
-		http.Error(w, "cannot divide :"+x[0], http.StatusBadRequest)
+		http.Error(w, "Illegal division by :"+x[0], http.StatusBadRequest)
 		return
 	}
 	yInt, err := strconv.Atoi(y[0])
@@ -48,12 +55,11 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 		log.Println("Error: values not appropriate")
 		fmt.Print("y error")
 		output["error"] = true
-		http.Error(w, "cannot divide :"+y[0], http.StatusBadRequest)
+		http.Error(w, "Illegal division by :"+y[0], http.StatusBadRequest)
 		return
 	}
 
-	answer := CalculateDivide(xInt, yInt)
-	output["answer"] = answer
+	output["answer"] = CalculateDivide(xInt, yInt)
 	output["x-value"] = xInt
 	output["y-value"] = yInt
 	w.Header().Set("Content-Type", "application/json")
